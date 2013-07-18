@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib import mlab
 
-def topography(value, x, y, cmap=plt.cm.jet, nx=512, ny=512, plotsensors=True, vmin=None, vmax=None):
+def topography(value, x, y, cmap=plt.cm.jet, nx=512, ny=512, plotsensors=True, vmin=None, vmax=None, colorbar=True):
     """Simple plot of a topography given one value per channel and its
     position through a layout.
 
@@ -42,14 +42,30 @@ def topography(value, x, y, cmap=plt.cm.jet, nx=512, ny=512, plotsensors=True, v
     
     # Plot the results
     plt.pcolormesh(xi,yi,zi, cmap=cmap, vmin=vmin, vmax=vmax)
-    plt.colorbar(shrink=0.75)
+    if colorbar: plt.colorbar(shrink=0.75)
     if plotsensors:
         plt.scatter(x,y,c='w')
 
     # plt.axis([xmin*0.95, xmax*1.05, ymin*0.95, ymax*1.05])
     plt.axis('equal')
     plt.axis('off')
-    plt.show()
+
+
+def hypertopography(values, x, y, zoom_factor=0.08, cmap=plt.cm.jet, nx=64, ny=64, plotsensors=True, vmin=None, vmax=None, colorbar=True):
+    """Plot a topography of topographies, useful to represent
+    relational information between channels, e.g. connectivity,
+    coherence, etc.
+    """
+    # set a common range for colors:
+    if vmin is None: vmin = values.min()
+    if vmax is None: vmax = values.max()
+
+    for i in range(values.shape[0]):
+        topography(values[i], x*zoom_factor + x[i], y*zoom_factor + y[i], nx=nx, ny=nx, plotsensors=False, vmin=vmin, vmax=vmax, colorbar=False)
+        if plotsensors:
+            plt.plot(x[i]*zoom_factor + x[i], y[i]*zoom_factor + y[i], 'k.', markersize=8)
+            
+    if colorbar: plt.colorbar()
 
 
 if __name__ == '__main__':
@@ -62,4 +78,8 @@ if __name__ == '__main__':
     value = np.random.rand(x.size)
     plt.figure()
     topography(value, x, y)
-    # plt.show()
+
+    plt.figure()
+    values = np.random.rand(x.size, x.size)
+    hypertopography(values, x, y)
+    plt.show()
