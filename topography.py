@@ -4,13 +4,18 @@ from matplotlib import mlab
 
 def topography(value, x, y, cmap=plt.cm.jet, nx=512, ny=512, plotsensors=True, vmin=None, vmax=None, colorbar=True):
     """Simple plot of a topography given one value per channel and its
-    position through a layout.
+    position (x,y) through a layout.
 
     Most of the code is taken from:
       http://stackoverflow.com/questions/3864899/resampling-irregularly-spaced-data-to-a-regular-grid-in-python
     with some minor additions.
 
-    nx, ny = size of regular grid.
+    cmap : colormap
+    nx, ny : size of regular grid.
+    plotsensors : whether you want to plot sensor positions
+    vmin : minimum value for the colormap
+    vmax : max value for the colormap
+    colorbar : whether to plot the colorbar or not
     """
     z = value
 
@@ -51,10 +56,15 @@ def topography(value, x, y, cmap=plt.cm.jet, nx=512, ny=512, plotsensors=True, v
     plt.axis('off')
 
 
-def hypertopography(values, x, y, zoom_factor=0.08, cmap=plt.cm.jet, nx=64, ny=64, plotsensors=True, vmin=None, vmax=None, colorbar=True, smooth_autovalues=False):
+def hypertopography(values, x, y, cmap=plt.cm.jet, nx=64, ny=64, plotsensors=True, vmin=None, vmax=None, colorbar=True, zoom_factor=0.08, smooth_autovalues=False):
     """Plot a topography of topographies, useful to represent
     relational information between channels, e.g. connectivity,
     coherence, etc.
+
+    See topography for an explanation of most parameters.
+
+    zoom_factor : this is the relative size of each mini topography
+    smooth_autovalues : whether to smooth or not diagonal values.
     """
     if smooth_autovalues:
         values = values.copy()
