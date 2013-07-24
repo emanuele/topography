@@ -51,11 +51,16 @@ def topography(value, x, y, cmap=plt.cm.jet, nx=512, ny=512, plotsensors=True, v
     plt.axis('off')
 
 
-def hypertopography(values, x, y, zoom_factor=0.08, cmap=plt.cm.jet, nx=64, ny=64, plotsensors=True, vmin=None, vmax=None, colorbar=True):
+def hypertopography(values, x, y, zoom_factor=0.08, cmap=plt.cm.jet, nx=64, ny=64, plotsensors=True, vmin=None, vmax=None, colorbar=True, smooth_autovalues=False):
     """Plot a topography of topographies, useful to represent
     relational information between channels, e.g. connectivity,
     coherence, etc.
     """
+    if smooth_autovalues:
+        values = values.copy()
+        mean = values.mean(0)
+        values[np.diag_indices(values.shape[0])] = mean
+        
     # set a common range for colors:
     if vmin is None: vmin = values.min()
     if vmax is None: vmax = values.max()
